@@ -45,13 +45,13 @@ role: >
 ### Responsibilities
 
 - Design MCP tools around the official DENUE API, without leaking raw HTTP
-  details to downstream agents.[web:33][web:36][web:50][web:90]
+  details to downstream agents.
 - Define clear contracts for each tool:
   - Inputs: primitive types, well named, with documented ranges.
   - Outputs: JSON objects with consistent `snake_case` keys and stable types.
 - Ensure the design follows MCP best practices:
   - Single-responsibility tools.
-  - Simple, observable, composable behavior.[web:90][web:94]
+  - Simple, observable, composable behavior.
   - No unnecessary dependencies.
   - No hard-to-test hidden business logic.
 
@@ -89,7 +89,7 @@ role: >
 ### Expected tech stack
 
 - Python 3.11+.
-- MCP server implemented following the official “Build an MCP server” guide.[web:50][web:94]
+- MCP server implemented following the official “Build an MCP server” guide.
 - HTTP client: `httpx` preferred (async or sync), or `requests` if simpler.
 - Configuration management:
   - `pydantic-settings` or similar for environment-based config.
@@ -144,12 +144,12 @@ role: >
 ### What to review
 
 - Correct usage of the DENUE API:
-  - Correct base URLs and endpoint patterns.[web:33][web:36]
+  - Correct base URLs and endpoint patterns.
   - Valid parameter ranges (e.g., radius meters, coordinates).
   - Proper handling of possible truncation / partial results.
 - Alignment with models:
   - Pydantic model field names match the real DENUE JSON (`Id`, `Nombre`,
-    `Latitud`, `Longitud`, etc.).[web:33]
+    `Latitud`, `Longitud`, etc.).
 - Code quality:
   - Small, single-purpose functions and methods.
   - Descriptive names; no cryptic abbreviations.
