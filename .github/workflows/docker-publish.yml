@@ -1,0 +1,54 @@
+name: Build and Publish Docker Image
+
+# Cuándo debe ejecutarse esto
+on:
+  push:
+    branches:
+      - main
+    # Opcional: Ejecutar también cuando se empuja un tag de versión (ej: v1.0.0)
+    tags:
+      - 'v*.*.*'
+
+# Define el registro de Docker que vamos a usar (El oficial de GitHub, gratis y público)
+env:
+  REGISTRY: ghcr.io
+  # El nombre de la imagen será igual al nombre de tu repo (ej. fectda/MCP-DEBUE)
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    
+    # Otorgar permisos a GitHub Actions para escribir en el registro de contenedores (GHCR)
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          # Usa el token automático de GitHub Actions
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=semver,pattern={{version}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

@@ -4,62 +4,15 @@ An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that p
 
 ## Requirements
 - An INEGI DENUE API key. You can get one at the [official INEGI portal](https://www.inegi.org.mx/servicios/api_denue.html).
-- Python 3.11+ OR Docker installed on your system.
+- Docker installed on your system.
 
 ## Installation and Usage
 
-You can connect this MCP server to your AI assistant using either a standard local Python environment (recommended for development and direct usage) or Docker (recommended if you don't want to install Python dependencies on your host machine).
+The easiest and most reliable way to use this MCP server is via Docker. The image is automatically built and hosted on GitHub Container Registry (GHCR), meaning you don't need to clone the repository, install Python, or manage virtual environments.
 
-### Option 1: Using a Local Python Environment (Standard)
-This is the standard way to run an MCP server locally. You will clone the code, install it in a virtual environment, and point your MCP client to the generated executable.
+**Configure your MCP Client (e.g., Claude Desktop or Cursor):**
 
-**1. Clone the repository and install dependencies:**
-```bash
-git clone https://github.com/fectda/MCP-DEBUE.git
-cd MCP-DEBUE
-
-# Create a virtual environment
-python -m venv .venv
-
-# Activate the virtual environment
-source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
-
-# Install the project and its dependencies
-pip install .
-```
-
-**2. Configure your MCP Client (e.g., Claude Desktop or Cursor):**
-Add the following configuration to your client's settings file (e.g., `claude_desktop_config.json`). 
-
-*Important: You must provide the absolute path to the `.venv/bin/mcp-denue` executable created in the previous step.*
-
-```json
-{
-  "mcpServers": {
-    "mcp-denue": {
-      "command": "/ABSOLUTE/PATH/TO/MCP-DEBUE/.venv/bin/mcp-denue",
-      "env": {
-        "DENUE_API_TOKEN": "YOUR_INEGI_TOKEN_HERE"
-      }
-    }
-  }
-}
-```
-
-### Option 2: Using Docker (Isolated)
-If you prefer not to manage Python versions or virtual environments, you can build a Docker image locally and run the server inside a container.
-
-**1. Clone the repository and build the Docker image locally:**
-```bash
-git clone https://github.com/fectda/MCP-DEBUE.git
-cd MCP-DEBUE
-
-# Build the local image and name it 'mcp-denue'
-docker build -t mcp-denue .
-```
-
-**2. Configure your MCP Client (e.g., Claude Desktop or Cursor):**
-Add the following configuration to your client's settings file. This tells your client to spin up the Docker container we just built (`mcp-denue`) every time it needs the server.
+Add the following configuration to your client's settings file (e.g., `claude_desktop_config.json`). This tells your client to download and run the Docker container directly from GitHub.
 
 ```json
 {
@@ -72,21 +25,32 @@ Add the following configuration to your client's settings file. This tells your 
         "--rm",
         "-e",
         "DENUE_API_TOKEN=YOUR_INEGI_TOKEN_HERE",
-        "mcp-denue"
+        "ghcr.io/fectda/mcp-debue:latest"
       ]
     }
   }
 }
 ```
+*(Docker will automatically download the image the first time it runs).*
+
+---
 
 ## Development and Testing (For contributors)
 If you want to modify the code of this server locally:
 
-1. Follow "Option 1" to setup your local `.venv`.
-2. Install the development tools instead of just the app:
+1. Clone the repository:
 ```bash
+git clone https://github.com/fectda/MCP-DEBUE.git
+cd MCP-DEBUE
+```
+
+2. Create a virtual environment and install development dependencies:
+```bash
+python -m venv .venv
+source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 pip install -e ".[dev]"
 ```
+
 3. Run tests or linters:
 ```bash
 pytest
