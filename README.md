@@ -20,7 +20,7 @@ Add this configuration to your MCP client (e.g., `claude_desktop_config.json`):
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/your-username/mcp-denue.git",
+        "git+https://github.com/fectda/MCP-DEBUE.git",
         "mcp-denue"
       ],
       "env": {
@@ -47,7 +47,7 @@ Add this configuration to your MCP client:
         "--rm",
         "-e",
         "DENUE_API_TOKEN=YOUR_INEGI_TOKEN_HERE",
-        "your-username/mcp-denue"
+        "fectda/MCP-DEBUE"
       ]
     }
   }
