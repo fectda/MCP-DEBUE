@@ -1,16 +1,16 @@
-# Ambientes virtuales
+# Virtual environments
 .venv/
 venv/
 ENV/
 env/
 .env
 
-# Archivos de caché de Python
+# Python cache files
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Herramientas de desarrollo
+# Development tools
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
@@ -22,6 +22,6 @@ dist/
 build/
 .tox/
 
-# Herramientas de sistema
+# System files
 .DS_Store
 Thumbs.db
