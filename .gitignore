@@ -1,0 +1,27 @@
+# Ambientes virtuales
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# Archivos de caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Herramientas de desarrollo
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.egg-info/
+dist/
+build/
+.tox/
+
+# Herramientas de sistema
+.DS_Store
+Thumbs.db
