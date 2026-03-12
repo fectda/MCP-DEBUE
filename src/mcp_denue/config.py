@@ -1,5 +1,9 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
+from pathlib import Path
+
+# Calculate the path to the .env file relative to this file
+ENV_PATH = Path(__file__).parent.parent.parent / ".env"
 
 
 class Config(BaseSettings):
@@ -15,7 +19,7 @@ class Config(BaseSettings):
     )
 
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+        env_file=ENV_PATH, env_file_encoding="utf-8", extra="ignore"
     )
 
 

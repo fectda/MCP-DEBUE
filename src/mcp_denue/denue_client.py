@@ -20,7 +20,7 @@ class DenueClient:
     def __init__(self, config: Config):
         self.config = config
         self.client = httpx.AsyncClient(
-            base_url=config.denue_base_url, timeout=config.request_timeout
+            base_url=config.denue_base_url, timeout=config.request_timeout, trust_env=False
         )
 
     def _handle_error(self, e: Exception, url: str) -> None:
@@ -37,6 +37,12 @@ class DenueClient:
                 raise DenueError(
                     f"HTTP Error: {e.response.status_code}", "DENUE_SERVER_ERROR"
                 )
+        elif isinstance(e, httpx.RemoteProtocolError):
+            # This handles the HTTP 000 / invalid status code crash
+            raise DenueError(
+                f"Protocol error from DENUE API (possibly invalid parameters): {str(e)}",
+                "DENUE_BAD_REQUEST",
+            )
         elif isinstance(e, httpx.RequestError):
             raise DenueError(
                 f"Network error while connecting to DENUE: {str(e)}",
@@ -103,11 +109,11 @@ class DenueClient:
         token = self.config.denue_api_token
         condicion = brand_name if brand_name else "todos"
 
-        # If municipality is not provided, use entity code. The INEGI API expects 'entidad' code.
-        # It's not standard BuscarEntidad has municipality unless it's a 5-digit code.
+        # BuscarEntidad only supports a 2-digit state code.
+        # If municipality_code is provided, we still use the 2-digit state_code
+        # for the URL and filter the results locally by checking if the location
+        # string contains the municipality_code as part of the location or CLEE.
         entidad = state_code
-        if municipality_code:
-            entidad = f"{state_code}{municipality_code}"
 
         # We will request 1 to 500 records max per PRD recommendation
         start = 1
@@ -130,7 +136,14 @@ class DenueClient:
         for item in data:
             try:
                 raw = DenueEstablishmentRaw(**item)
-                results.append(Establishment.from_raw(raw))
+                est = Establishment.from_raw(raw)
+                # Local filtering by municipality code if provided
+                # CLEE contains the state(2) + municipality(3) codes as the first 5 digits
+                if municipality_code:
+                    full_code = f"{state_code}{municipality_code}"
+                    if raw.CLEE and not raw.CLEE.startswith(full_code):
+                        continue
+                results.append(est)
             except Exception:
                 continue
         return results

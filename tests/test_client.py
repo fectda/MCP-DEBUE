@@ -111,10 +111,22 @@ async def test_search_by_name_entity_success(client: DenueClient, config: Config
 @pytest.mark.asyncio
 @respx.mock
 async def test_search_by_name_entity_with_municipality(client: DenueClient, config: Config) -> None:
-    mock_url = f"{config.denue_base_url}BuscarEntidad/oxxo/09015/1/100/TEST_TOKEN"
-    respx.get(mock_url).mock(return_value=httpx.Response(200, json=[]))
+    # URL should only have the 2-digit state code "09"
+    mock_url = f"{config.denue_base_url}BuscarEntidad/oxxo/09/1/100/TEST_TOKEN"
+    respx.get(mock_url).mock(
+        return_value=httpx.Response(
+            200,
+            json=[
+                {"CLEE": "09015123", "Id": "1", "Nombre": "OXXO 1", "Clase_actividad": "X", "Estrato": "Y", "Tipo_vialidad": "Z", "Calle": "A", "Ubicacion": "B", "Tipo": "C", "Latitud": "0", "Longitud": "0"},
+                {"CLEE": "09013456", "Id": "2", "Nombre": "OXXO 2", "Clase_actividad": "X", "Estrato": "Y", "Tipo_vialidad": "Z", "Calle": "A", "Ubicacion": "B", "Tipo": "C", "Latitud": "0", "Longitud": "0"},
+            ],
+        )
+    )
+    # Search for municipality 015 in state 09
     results = await client.search_by_name_entity("oxxo", "09", "015")
-    assert len(results) == 0
+    assert len(results) == 1
+    assert results[0].id == "1"
+    assert results[0].clee == "09015123"
 
 @pytest.mark.asyncio
 @respx.mock

@@ -25,3 +25,8 @@ build/
 # System files
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
+denue_error.log
+server_stderr.log

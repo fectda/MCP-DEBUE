@@ -2,7 +2,7 @@ import asyncio
 import logging
 import json
 import sys
-from typing import Any
+from typing import Any, Callable
 from mcp.server import Server
 from mcp.types import Tool, TextContent, CallToolResult
 from mcp.server.stdio import stdio_server
@@ -16,7 +16,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = Server("mcp-denue")
+app = Server("mcp-denue", version="0.1.0")
 
 
 @app.list_tools()  # type: ignore
@@ -103,16 +103,31 @@ async def list_tools() -> list[Tool]:
                 "required": ["area_code"],
             },
         ),
+        Tool(
+            name="ping",
+            description="Minimal ping tool to test server responsiveness",
+            inputSchema={"type": "object", "properties": {}},
+        ),
     ]
 
 
-from typing import Callable
 async def safe_call(func: Callable[..., Any], *args: Any, **kwargs: Any) -> CallToolResult:
     try:
         res = await func(*args, **kwargs)
         # Assuming Pydantic models with .model_dump()
+        try:
+            if hasattr(res, "model_dump_json"):
+                json_text = res.model_dump_json()
+            elif hasattr(res, "json"):
+                json_text = res.json()
+            else:
+                json_text = json.dumps(res, default=str)
+        except Exception as e:
+            logger.error(f"Serialization error: {e}")
+            json_text = json.dumps({"error": "SERIALIZATION_ERROR", "message": str(e)})
+
         return CallToolResult(
-            content=[TextContent(type="text", text=res.model_dump_json())]
+            content=[TextContent(type="text", text=json_text)]
         )
     except DenueError as e:
         logger.error(f"DenueError in tool execution: {e.type} - {e.message}")
@@ -149,7 +164,9 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> CallToolResult:
 
     wrapper: ToolsWrapper = getattr(app, "wrapper")
 
-    if name == "denue_search_by_name_radius":
+    if name == "ping":
+        return CallToolResult(content=[TextContent(type="text", text="pong")])
+    elif name == "denue_search_by_name_radius":
         return await safe_call(
             wrapper.search_by_name_radius,
             arguments["brand_name"],
@@ -186,7 +203,10 @@ async def run() -> None:
     try:
         config = get_config()
     except Exception as e:
-        logger.error(f"Configuration error (DENUE_API_TOKEN might be missing): {e}")
+        logger.error(f"Configuration error: {e}")
+        logger.error(
+            "Check if DENUE_API_TOKEN is set in your environment or in a .env file at the project root."
+        )
         sys.exit(1)
 
     client = DenueClient(config)

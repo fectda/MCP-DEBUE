@@ -36,7 +36,7 @@ async def test_call_tool_search_by_name_radius(mock_app: Server) -> None:
                     "Ubicacion": "CDMX",
                     "Tipo": "Fijo",
                     "Latitud": "19.0",
-                    "Clase_actividad": "Minisuper","Estrato": "0 a 5 personas","Tipo_vialidad": "Calle","Calle": "Juarez","Ubicacion": "CDMX","Tipo": "Fijo","Latitud": "19.0","Longitud": "-99.0",
+                    "Longitud": "-99.0",
                 }
             ],
         )
@@ -73,8 +73,14 @@ async def test_call_tool_search_by_name_entity(mock_app: Server) -> None:
                     "CLEE": "123",
                     "Id": "1",
                     "Nombre": "OXXO",
+                    "Clase_actividad": "Minisuper",
+                    "Estrato": "0 a 5 personas",
+                    "Tipo_vialidad": "Calle",
+                    "Calle": "Juarez",
+                    "Ubicacion": "CDMX",
+                    "Tipo": "Fijo",
                     "Latitud": "19.0",
-                    "Clase_actividad": "Minisuper","Estrato": "0 a 5 personas","Tipo_vialidad": "Calle","Calle": "Juarez","Ubicacion": "CDMX","Tipo": "Fijo","Latitud": "19.0","Longitud": "-99.0",
+                    "Longitud": "-99.0",
                 }
             ],
         )
@@ -101,8 +107,14 @@ async def test_call_tool_get_ficha(mock_app: Server) -> None:
                     "CLEE": "123",
                     "Id": "1",
                     "Nombre": "OXXO",
+                    "Clase_actividad": "Minisuper",
+                    "Estrato": "0 a 5 personas",
+                    "Tipo_vialidad": "Calle",
+                    "Calle": "Juarez",
+                    "Ubicacion": "CDMX",
+                    "Tipo": "Fijo",
                     "Latitud": "19.0",
-                    "Clase_actividad": "Minisuper","Estrato": "0 a 5 personas","Tipo_vialidad": "Calle","Calle": "Juarez","Ubicacion": "CDMX","Tipo": "Fijo","Latitud": "19.0","Longitud": "-99.0",
+                    "Longitud": "-99.0",
                 }
             ],
         )
